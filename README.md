@@ -44,6 +44,16 @@ PUT /rest/api/3/issue/SHOP-14/properties/change-suspects
   Atlassian MCP server. [`skills/change-suspects/SKILL.md`](skills/change-suspects/SKILL.md) tells a third-party agent
   how to use them.
 
+## Screenshots
+
+![The panel on an incident: changes before the start, ranked, each with the reasons it is there.](docs/images/2-suspects-with-evidence.jpg)
+
+![Project page: recent incidents, the change most likely involved in each, and whether a cause has been marked.](docs/images/1-project-overview.jpg)
+
+![Rovo lists the suspects with their evidence, the weak matches left out and the rollback after the start.](docs/images/7-rovo-answer.jpg)
+
+The data in the screenshots is fictional sample data.
+
 ## Try it
 
 1. Install the app on a Jira site.
