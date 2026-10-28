@@ -99,6 +99,12 @@ export async function addComment(key, body) {
   return call(route`/rest/api/3/issue/${key}/comment`, { method: 'POST', body: JSON.stringify({ body }) });
 }
 
+// Work type names that mark incidents on this site, such as "Incident" or Jira Service Management's "[System] Incident".
+export async function incidentTypeNames() {
+  const types = await call(route`/rest/api/3/issuetype`);
+  return [...new Set(types.filter((t) => /incident/i.test(`${t.name} ${t.untranslatedName || ''}`)).map((t) => t.name))];
+}
+
 export async function myTimeZone() {
   return (await call(route`/rest/api/3/myself`)).timeZone || 'UTC';
 }

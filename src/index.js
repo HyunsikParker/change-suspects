@@ -1,5 +1,5 @@
 import Resolver from '@forge/resolver';
-import { addComment, candidateChanges, causeLinkType, incident as loadIncident, linkCause, myTimeZone, request, search, setProperty, siteUrl, unlinkCause } from './jira.js';
+import { addComment, candidateChanges, causeLinkType, incident as loadIncident, incidentTypeNames, linkCause, myTimeZone, request, search, setProperty, siteUrl, unlinkCause } from './jira.js';
 import { isIncident, toIncident } from './core/adapt.js';
 import { rankChanges, reasons } from './core/rank.js';
 import { timelineAdf, timelineEvents } from './core/timeline.js';
@@ -89,8 +89,10 @@ resolver.define('postTimeline', async ({ payload, context }) => {
 // Incidents created in the project in the last 30 days, each with its strongest suspect. One search covers the
 // changes for all of them.
 async function projectIncidents(projectKey) {
-  const jql = (types) => `project = "${projectKey}" AND (${types}labels = incident) AND created >= -30d ORDER BY created DESC`;
-  const issues = await search(jql('issuetype in ("Incident", "[System] Incident") OR '), { max: 10 }).catch(() => search(jql(''), { max: 10 }));
+  const names = await incidentTypeNames().catch(() => []);
+  const types = names.length ? `issuetype in (${names.map((n) => JSON.stringify(n)).join(', ')}) OR ` : '';
+  const jql = (t) => `project = "${projectKey}" AND (${t}labels = incident) AND created >= -30d ORDER BY created DESC`;
+  const issues = await search(jql(types), { max: 10 }).catch(() => search(jql(''), { max: 10 }));
   if (issues.length === 0) return [];
   const incidents = issues.map(toIncident);
   const earliest = incidents.reduce((a, i) => (toMs(i.startedAt) < toMs(a) ? i.startedAt : a), incidents[0].startedAt);

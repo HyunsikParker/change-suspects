@@ -7,6 +7,9 @@ import { Band, span, when } from './common.jsx';
 import { zonedParts, zonedToIso } from '../core/time.js';
 
 const WINDOWS = [{ label: '24 hours', value: 24 }, { label: '3 days', value: 72 }, { label: '7 days', value: 168 }];
+// Incidents start at any hour, so the time list covers the whole day and typed times are accepted.
+const pad = (n) => String(n).padStart(2, '0');
+const TIMES = Array.from({ length: 96 }, (_, i) => `${pad(Math.floor(i / 4))}:${pad((i % 4) * 15)}`);
 function StartEditor({ startedAt, timeZone, onSaved, onCancel }) {
   const initial = zonedParts(startedAt, timeZone);
   const [date, setDate] = useState(initial.date);
@@ -21,7 +24,7 @@ function StartEditor({ startedAt, timeZone, onSaved, onCancel }) {
     <Stack space="space.100">
       <Inline space="space.100" alignBlock="end">
         <DatePicker value={date} onChange={setDate} label="Date" />
-        <TimePicker value={time} onChange={setTime} label="Time" />
+        <TimePicker value={time} onChange={setTime} label="Time" times={TIMES} timeIsEditable timeFormat="HH:mm" />
         <Button appearance="primary" isDisabled={state?.busy || !date || !time} onClick={save}>Save start</Button>
         <Button appearance="subtle" onClick={onCancel}>Cancel</Button>
       </Inline>
