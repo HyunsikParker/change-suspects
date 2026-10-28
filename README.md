@@ -20,7 +20,8 @@ Built on Atlassian Forge for Codegeist 2026 (category: Apps for Software Teams).
   words, never as a bare score.
 
 Deploy times can come from your pipeline: store them as the issue property `change-suspects` on the change, for
-example with an Automation rule ("Set entity property") or a REST call:
+example with an Automation rule ("Set entity property") or a REST call. Write times in whole seconds; Jira's property
+index skips ISO times that carry milliseconds.
 
 ```http
 PUT /rest/api/3/issue/SHOP-14/properties/change-suspects
