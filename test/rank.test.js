@@ -48,3 +48,13 @@ test('reasons name the evidence', () => {
   assert.deepEqual(reasons(r.before[0]).slice(0, 2), ['Deployed 35 min before the start', 'Same label: payments']);
   assert.ok(reasons(r.before[0]).includes('Change risk: High'));
 });
+
+test('sample changes from another project are left out', () => {
+  const inc = { ...incidentOf(SAMPLE_INCIDENTS[0]), project: 'WEB' };
+  const mine = changes.map((c) => ({ ...c, project: 'WEB' }));
+  const other = changes.map((c) => ({ ...c, key: `OLD-${c.key}`, project: 'SHOP' }));
+  const real = { ...changes[0], key: 'OPS-1', project: 'OPS', labels: ['payments'] };
+  const r = rankChanges(inc, [...mine, ...other, real], { windowHours: 72, now: NOW });
+  assert.ok(!r.before.some((c) => c.key.startsWith('OLD-')));
+  assert.ok(r.before.some((c) => c.key === 'OPS-1'));
+});

@@ -4,7 +4,8 @@
 import { toMs, spanText } from './time.js';
 import { termsOf, idfTable, similarity } from './text.js';
 
-const IGNORED_LABELS = new Set(['incident', 'change-suspects-sample']);
+const SAMPLE_LABEL = 'change-suspects-sample';
+const IGNORED_LABELS = new Set(['incident', SAMPLE_LABEL]);
 const RISK_BONUS = { high: 0.1, critical: 0.15, 'very high': 0.15 };
 export const BANDS = { strong: 0.6, possible: 0.25 };
 
@@ -22,7 +23,9 @@ export function rankChanges(incident, candidates, { windowHours = 72, now = new 
   const start = toMs(incident.startedAt);
   const from = start - windowHours * 3600000;
   const nowMs = toMs(now);
-  const pool = candidates.filter((c) => c.key !== incident.key && toMs(c.changedAt) !== null);
+  // Sample changes only count for incidents in the project they were loaded into.
+  const foreignSample = (c) => c.labels?.includes(SAMPLE_LABEL) && c.project && incident.project && c.project !== incident.project;
+  const pool = candidates.filter((c) => c.key !== incident.key && toMs(c.changedAt) !== null && !foreignSample(c));
   const incidentTerms = termsOf(incident.text);
   const docs = pool.map((c) => termsOf(c.text));
   const idf = idfTable([incidentTerms, ...docs]);

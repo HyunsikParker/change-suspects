@@ -36,6 +36,7 @@ export function toIncident(issue) {
     startSource: prop.startedAt ? 'set' : 'created',
     marked: Array.isArray(prop.marked) ? prop.marked : [],
     status: f.status?.name || '',
+    project: f.project?.key || '',
   };
 }
 
