@@ -62,9 +62,14 @@ export async function candidateChanges(startedAt, windowHours) {
   return issues.filter(isChangeCandidate).map((i) => toChange(i, risk));
 }
 
+// The site's own address for browse links; `self` URLs in API responses point at api.atlassian.com.
+export async function siteUrl() {
+  return (await call(route`/rest/api/3/serverInfo`)).baseUrl;
+}
+
 export async function incident(key) {
-  const issue = await getIssue(key);
-  return { issue, incident: toIncident(issue), siteUrl: new URL(issue.self).origin };
+  const [issue, base] = await Promise.all([getIssue(key), siteUrl()]);
+  return { issue, incident: toIncident(issue), siteUrl: base };
 }
 
 // Prefers a link type that says "causes" (Jira Service Management's Problem/Incident type); otherwise Relates.

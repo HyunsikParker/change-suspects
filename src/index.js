@@ -1,5 +1,5 @@
 import Resolver from '@forge/resolver';
-import { addComment, candidateChanges, causeLinkType, incident as loadIncident, linkCause, myTimeZone, request, search, setProperty, unlinkCause } from './jira.js';
+import { addComment, candidateChanges, causeLinkType, incident as loadIncident, linkCause, myTimeZone, request, search, setProperty, siteUrl, unlinkCause } from './jira.js';
 import { isIncident, toIncident } from './core/adapt.js';
 import { rankChanges, reasons } from './core/rank.js';
 import { timelineAdf, timelineEvents } from './core/timeline.js';
@@ -94,8 +94,7 @@ async function projectIncidents(projectKey) {
   if (issues.length === 0) return [];
   const incidents = issues.map(toIncident);
   const earliest = incidents.reduce((a, i) => (toMs(i.startedAt) < toMs(a) ? i.startedAt : a), incidents[0].startedAt);
-  const changes = await candidateChanges(earliest, DEFAULT_WINDOW);
-  const base = new URL(issues[0].self).origin;
+  const [changes, base] = await Promise.all([candidateChanges(earliest, DEFAULT_WINDOW), siteUrl()]);
   return incidents.map((inc) => {
     const r = rankChanges(inc, changes, { windowHours: DEFAULT_WINDOW });
     return {
