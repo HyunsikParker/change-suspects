@@ -56,7 +56,7 @@ function App() {
       <Stack space="space.100">
         <Heading size="small">Recording deploy times</Heading>
         <Text>A change counts from when it was resolved. When your pipeline knows the exact deploy time, store it on the work item as the issue property change-suspects, for example from an Automation rule with the Set entity property action or from a REST call:</Text>
-        <Code>{'PUT /rest/api/3/issue/SHOP-14/properties/change-suspects  {"deployedAt": "2026-10-28T13:13:00Z"}'}</Code>
+        <Code>{`PUT /rest/api/3/issue/${data.projectKey}-14/properties/change-suspects  {"deployedAt": "2026-10-28T13:13:00Z"}`}</Code>
       </Stack>
     </Stack>
   );
