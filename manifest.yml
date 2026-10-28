@@ -1,0 +1,129 @@
+modules:
+  jira:issuePanel:
+    - key: change-suspects-panel
+      resource: panel
+      resolver:
+        function: resolver
+      render: native
+      title: Change suspects
+      icon: resource:icons;suspects.svg
+  jira:projectPage:
+    - key: change-suspects-project
+      resource: project
+      resolver:
+        function: resolver
+      render: native
+      title: Change suspects
+  jira:entityProperty:
+    - key: change-suspects-index
+      entityType: issue
+      propertyKey: change-suspects
+      values:
+        - path: deployedAt
+          type: date
+        - path: startedAt
+          type: date
+  rovo:agent:
+    - key: change-suspects-agent
+      name: Change Suspects
+      description: Answers "what changed just before this broke?" for a Jira incident.
+        Lists the changes that went in before the incident started, ranked with
+        the evidence for each, and links the one the team suspects.
+      prompt: resource:agent;prompt.txt
+      conversationStarters:
+        - What changed before this incident started?
+        - Which incidents this month have no suspected cause yet?
+        - Mark the strongest suspect as the cause
+      actions:
+        - list-suspect-changes
+        - mark-suspect-change
+        - list-recent-incidents
+  rovo:mcp:
+    - key: change-suspects-mcp
+      name: Change Suspects tools
+      tools:
+        - list-suspect-changes
+        - mark-suspect-change
+        - list-recent-incidents
+  action:
+    - key: list-suspect-changes
+      name: List suspect changes
+      function: listSuspectChanges
+      actionVerb: GET
+      description: >
+        Lists the changes resolved or deployed before a Jira incident started, ranked with the evidence for each
+        (time, shared component or label, shared words, risk), plus changes after the start and marked suspects.
+      inputs:
+        issueKey:
+          title: Incident key
+          type: string
+          required: true
+          description: The key of the incident work item, for example SHOP-21.
+        windowHours:
+          title: Window in hours
+          type: number
+          required: false
+          description: How far back to look before the start, 24, 72 or 168 hours. Default
+            72.
+    - key: mark-suspect-change
+      name: Mark suspect change
+      function: markSuspectChange
+      actionVerb: UPDATE
+      description: >
+        Marks a change as the suspected cause of an incident: links the two work
+        items (with the "causes" link type when the site has one, otherwise
+        Relates) and records the mark on the incident.
+      inputs:
+        incidentKey:
+          title: Incident key
+          type: string
+          required: true
+          description: The key of the incident work item, for example SHOP-21.
+        changeKey:
+          title: Change key
+          type: string
+          required: true
+          description: The key of the change work item to mark, for example SHOP-14.
+    - key: list-recent-incidents
+      name: List recent incidents
+      function: listRecentIncidents
+      actionVerb: GET
+      description: >
+        Lists the incidents created in a Jira project in the last 30 days with
+        the change most likely involved in each and whether a suspected cause
+        has been marked.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: true
+          description: The Jira project key, for example SHOP.
+  function:
+    - key: resolver
+      handler: index.handler
+    - key: listSuspectChanges
+      handler: index.listSuspectChanges
+    - key: markSuspectChange
+      handler: index.markSuspectChange
+    - key: listRecentIncidents
+      handler: index.listRecentIncidents
+resources:
+  - key: panel
+    path: src/frontend/panel.jsx
+  - key: project
+    path: src/frontend/project.jsx
+  - key: agent
+    path: resources/agent
+  - key: icons
+    path: resources/icons
+app:
+  runtime:
+    name: nodejs24.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/2b128bba-dd2d-401c-9d90-58e8679e0438
+permissions:
+  scopes:
+    - read:jira-work
+    - write:jira-work
+    - read:jira-user
