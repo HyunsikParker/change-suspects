@@ -26,6 +26,7 @@ modules:
   rovo:agent:
     - key: change-suspects-agent
       name: Change Suspects
+      icon: resource:icons;suspects.svg
       description: Answers "what changed just before this broke?" for a Jira incident.
         Lists the changes that went in before the incident started, ranked with
         the evidence for each, and links the one the team suspects.
