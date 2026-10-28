@@ -52,7 +52,7 @@ PUT /rest/api/3/issue/SHOP-14/properties/change-suspects
 
 ![Rovo lists the suspects with their evidence, the weak matches left out and the rollback after the start.](docs/images/7-rovo-answer.jpg)
 
-The data in the screenshots is fictional sample data.
+The screenshots show fictional sample data.
 
 ## Try it
 
