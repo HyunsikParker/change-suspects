@@ -26,7 +26,7 @@ test('the sample creates the changes as done tasks with deploy times, then the i
   assert.equal(creates.at(-1)[2].fields.issuetype.id, '2');
   assert.ok(creates.every(([, , b]) => b.fields.labels.includes('change-suspects-sample')));
   const props = j.calls.filter(([m, p]) => m === 'PUT' && p.includes('/properties/change-suspects'));
-  assert.deepEqual(props[0][2], { deployedAt: '2026-10-28T13:13:00.000Z', risk: 'High' });
-  assert.deepEqual(props.at(-1)[2], { startedAt: '2026-10-28T09:50:00.000Z' });
+  assert.deepEqual(props[0][2], { deployedAt: '2026-10-28T13:13:00Z', risk: 'High' });
+  assert.deepEqual(props.at(-1)[2], { startedAt: '2026-10-28T09:50:00Z' });
   assert.equal(j.calls.filter(([m, p]) => m === 'POST' && p.endsWith('/transitions')).length, SAMPLE_CHANGES.length);
 });

@@ -5,7 +5,7 @@ import { rankChanges, reasons } from './core/rank.js';
 import { timelineAdf, timelineEvents } from './core/timeline.js';
 import { seedSample } from './core/seed.js';
 import { SAMPLE_LABEL } from './core/sample.js';
-import { DEFAULT_WINDOW, WINDOWS, spanText, toMs, windowText } from './core/time.js';
+import { DEFAULT_WINDOW, WINDOWS, isoSeconds, spanText, toMs, windowText } from './core/time.js';
 
 const KEY = /^[A-Z][A-Z0-9_]+-\d+$/;
 const windowOf = (h) => (WINDOWS.includes(Number(h)) ? Number(h) : DEFAULT_WINDOW);
@@ -49,7 +49,7 @@ resolver.define('setStart', async ({ payload, context }) => {
   if (ms === null) return { ok: false, error: 'Pick a date and a time.' };
   if (ms > Date.now() + 60000) return { ok: false, error: 'The start cannot be in the future.' };
   const { incident } = await loadIncident(key);
-  await setProperty(key, { startedAt: new Date(ms).toISOString(), marked: incident.marked });
+  await setProperty(key, { startedAt: isoSeconds(ms), marked: incident.marked });
   return { ok: true };
 });
 

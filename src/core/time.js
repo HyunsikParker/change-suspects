@@ -9,7 +9,10 @@ export function toMs(iso) {
   return Number.isNaN(t) ? null : t;
 }
 
-export const addMinutes = (iso, minutes) => new Date(toMs(iso) + minutes * 60000).toISOString();
+// Whole seconds, because Jira's entity property index does not read ISO times with milliseconds.
+export const isoSeconds = (ms) => new Date(Math.floor(ms / 1000) * 1000).toISOString().replace('.000Z', 'Z');
+
+export const addMinutes = (iso, minutes) => isoSeconds(toMs(iso) + minutes * 60000);
 
 // "35 min", "3 h 10 min", "26 h", "2 days 4 h"
 export function spanText(minutes) {
